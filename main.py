@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment
 
 def geturl(stock_code):
     url = 'https://tw.stock.yahoo.com/q/q?s=' + stock_code
@@ -32,7 +33,7 @@ def getdata(soup):
     except:
         print('cant get table data')
 
-    print(stockDic)
+    # print(stockDic)
     return stockDic
 
 def write_in_excel(stock_data):
@@ -59,7 +60,6 @@ def write_in_excel(stock_data):
         ws1.append(stock_title)
         ws1.append(stock_value)
 
-
     # 儲存
     wb.save(filename = excel_name + '.xlsx')
 
@@ -82,6 +82,8 @@ def fixcolumnwidth(excel_name, title):
     # 尋找每個column的cell有多少個字，以字數最多的cell為基準放大此column的width
     for row in sheet_range.rows:
         for cell in row:
+        	#將所有內容置中
+            cell.alignment = Alignment(horizontal="center", vertical="center")
             if cell.value:
                 # 將每個column的代號column_letter放入dictionary的key，比較完大小後放入value
                 col_widths_dict[cell.column_letter] = max((col_widths_dict.get(cell.column_letter, 0), len(str(cell.value))))

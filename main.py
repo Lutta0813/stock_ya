@@ -81,16 +81,16 @@ def fixcolumnwidth(excel_name, title):
     
     # 尋找每個column的cell有多少個字，以字數最多的cell為基準放大此column的width
     for row in sheet_range.rows:
-    	for cell in row:
-    		if cell.value:
-    			# 將每個column的代號column_letter放入dictionary的key，比較完大小後放入value
-    			col_widths_dict[cell.column_letter] = max((col_widths_dict.get(cell.column_letter, 0), len(str(cell.value))))
+        for cell in row:
+            if cell.value:
+                # 將每個column的代號column_letter放入dictionary的key，比較完大小後放入value
+                col_widths_dict[cell.column_letter] = max((col_widths_dict.get(cell.column_letter, 0), len(str(cell.value))))
 
     for col, value in col_widths_dict.items():
-	    sheet_range.column_dimensions[col].width = int(value) + 5
+        sheet_range.column_dimensions[col].width = int(value) + 5
 
-	# 調整完後存入原檔案中
-	wb.save(excel_name + '.xlsx')
+    # 調整完後存入原檔案中
+    wb.save(filename = excel_name + '.xlsx')
 
 def main():
     try:

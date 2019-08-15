@@ -38,13 +38,12 @@ def getdata(soup):
     # print(stockDic)
     return stockDic
 
+
 def write_in_excel(stock_data):
-    wb = Workbook()
-    ws1 = wb.active
-    excel_name = stock_data['股票名稱']
-    ws1.title = 'Stock Data'
     stock_title = []
     stock_value =[]
+    excel_name = stock_data['股票名稱']
+    row_count = 0
 
     for key,value in stock_data.items():
         try:
@@ -57,29 +56,60 @@ def write_in_excel(stock_data):
         except:
             print('Something wrong')
 
-    # 將資料放入xml中
-    for row in range(0,1):
-        ws1.append(stock_title)
-        ws1.append(stock_value)
+    # 如果目錄已有相關檔案
+    try:
+        wb = load_workbook(filename = excel_name + '.xlsx')
+        ws1 = wb.active
+        sheet_range = wb[ws1.title]
 
-    # 儲存
-    wb.save(filename = excel_name + '.xlsx')
+        # 確認excel檔中那些rows已經有內容
+        for data in sheet_range.rows:
+            row_count += 1
+
+        # 將檔案添加在文末
+        for row in range(row_count + 1, row_count + 2):
+            ws1.append(stock_value)
+
+        # 儲存
+        wb.save(filename = excel_name + '.xlsx')
+
+        print('目錄已有相關資料，開始添加' + excel_name + '的今日相關資訊')
+    
+    except:
+        wb = Workbook()
+        ws1 = wb.active
+        ws1.title = 'Stock Data'
+
+        # 將資料放入xml中
+        for row in range(0,1):
+            ws1.append(stock_title)
+            ws1.append(stock_value)
+
+        # 儲存
+        wb.save(filename = excel_name + '.xlsx')
+
+        print('過去沒有相關資料，開始獲取' + excel_name + '的今日相關資訊')
+
+    # 在terminal顯示抓取的cell內容
+    max_row = ws1.max_row
+    max_column = ws1.max_column
+    # 只顯示最新增加的內容，起始row為max_row
+    for row in range(max_row, max_row+1):
+        for column in range(1, max_column+1):
+            cell_obj = ws1.cell(row=row,column=column)
+            print(cell_obj.value,end=' | ')
+        print('\n') #斷行
+
 
     return excel_name, ws1.title
 
-def fixcolumnwidth(excel_name, title):
-    wb = load_workbook(filename = excel_name + '.xlsx')
-    sheet_range = wb['Stock Data'] # 選擇Stock Data這個Sheet
-    col_widths_dict = {}
 
-    # 顯示每個cell的內容
-    max_row = sheet_range.max_row
-    max_column = sheet_range.max_column
-    for row in range(1, max_row+1):
-        for column in range(1, max_column+1):
-            cell_obj = sheet_range.cell(row=row,column=column)
-            print(cell_obj.value,end=' | ')
-        print('\n') #斷行
+
+
+def fixcolumnwidth(excel_name, sheet_name):
+    wb = load_workbook(filename = excel_name + '.xlsx')
+    sheet_range = wb[sheet_name] # 選擇Stock Data這個Sheet
+    col_widths_dict = {}
     
     # 尋找每個column的cell有多少個字，以字數最多的cell為基準放大此column的width
     for row in sheet_range.rows:
@@ -90,6 +120,7 @@ def fixcolumnwidth(excel_name, title):
                 # 將每個column的代號column_letter放入dictionary的key，比較完大小後放入value
                 col_widths_dict[cell.column_letter] = max((col_widths_dict.get(cell.column_letter, 0), len(str(cell.value))))
 
+    # 調整column width
     for col, value in col_widths_dict.items():
         sheet_range.column_dimensions[col].width = value + 8
 
@@ -102,7 +133,10 @@ def main():
     except ValueError:
         print('股票代碼只可以是整數數字')
     stock_data = getdata(geturl(stockID))
-    excel_data_name, title = write_in_excel(stock_data)
-    fixcolumnwidth(excel_data_name, title)
+    excel_data_name, sheet_title = write_in_excel(stock_data)
+    try:
+        fixcolumnwidth(excel_data_name, sheet_title)
+    except:
+        print('error')
 
 main()

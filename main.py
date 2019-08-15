@@ -137,6 +137,6 @@ def main():
     try:
         fixcolumnwidth(excel_data_name, sheet_title)
     except:
-        print('error')
+        print('調整column width時發生錯誤')
 
 main()

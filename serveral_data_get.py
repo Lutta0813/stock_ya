@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties as fp
 from datetime import datetime
 from datetime import timedelta
+import time
 
 def geturl(stock_code, start_date):
     url = 'https://www.cnyes.com/twstock/ps_historyprice/' + str(stock_code) + '.htm'
@@ -54,7 +55,6 @@ def getdata(soup):
 
 def main():
     st_code = input('請輸入股票代碼：')
-    st_date = input('請選擇起始時間：\n0：一個月\n1：三個月\n2：一年：\n')
 
     # time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     # time_now = datetime.now().strftime("%Y-%m-%d")
@@ -63,6 +63,7 @@ def main():
     time_1yeas_ago = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
 
     while True:
+        st_date = input('請選擇起始時間：\n0：一個月\n1：三個月\n2：一年\n')
         if st_date == '0':
             price, date, stock_name = getdata(geturl(st_code, time_30days_ago))
             break
@@ -73,7 +74,9 @@ def main():
             price, date, stock_name = getdata(geturl(st_code, time_1yeas_ago))
             break
         else:
-            print('請輸入正確數字')
+            print('\n---Error---\n請輸入正確數字，三秒後重試\n----------\n')
+            time.sleep(3)
+            continue
 
     # price, date, stock_name = getdata(geturl(st_code))
     data = {}

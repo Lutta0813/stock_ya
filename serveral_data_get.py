@@ -9,7 +9,6 @@ import time
 
 def geturl(stock_code, start_date):
     url = 'https://www.cnyes.com/twstock/ps_historyprice/' + str(stock_code) + '.htm'
-    print(url)
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'}
     result = requests.Session()
     
@@ -18,7 +17,7 @@ def geturl(stock_code, start_date):
     'ctl00$ContentPlaceHolder1$startText' : start_date,
     'ctl00$ContentPlaceHolder1$submitBut:' : '查詢'
     }
-    r = result.post(url, params)
+    r = result.post(url, params, headers)
 
     # r = result.get(url, headers = headers, allow_redirects=False)
     print(r.status_code) # 200表示訪問成功

@@ -19,16 +19,22 @@ def getdata(soup):
     try:
         price = []
         dateContent = []
-        closingPrice = soup.find_all(text = '收盤')[0].parent.parent.parent.select('tr')
-        date = soup.find_all(text = '收盤')[0].parent.parent.parent.select('tr')
+        count = 0
 
+        # 表單父級
+        trPos = soup.find_all(text = '收盤')[0].parent.parent.parent.select('tr')
+        # 股票名稱
         st_name = soup.select('h1')[0].select('a')[0].text
         print(st_name)
 
+        # 算出table data有幾筆我們需要的資料，第0筆為文字描述我們不需要
+        for i in trPos[1:]:
+            count += 1
 
-        for i in range(1,23):
-            p = float(closingPrice[i].select('td')[4].text)
-            t = date[i].select('td')[0].text
+        # 從第1筆開始將數據讀取出來
+        for i in range(1, count):
+            p = float(trPos[i].select('td')[4].text)
+            t = trPos[i].select('td')[0].text
             price.append(p)
             dateContent.append(t)
 
@@ -51,6 +57,7 @@ def main():
     values = list(data.values())
     values = sorted(values)
 
+    # 中文字體路徑
     myfont = fp(fname=r'/System/Library/Fonts/STHeiti Medium.ttc')
 
     plt.plot(times, values)

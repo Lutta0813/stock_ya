@@ -50,22 +50,15 @@ def main():
     for p, d in zip(price, date):
         data[d] = p
         print('時間：' + d + ' ' + '成交價：' + str(p))
-    
-    
-    times = list(data.keys())
-    times = sorted(times)
-    values = list(data.values())
-    values = sorted(values)
 
     # 中文字體路徑
     myfont = fp(fname=r'/System/Library/Fonts/STHeiti Medium.ttc')
 
-    plt.plot(times, values)
+    plt.plot(sorted(date), sorted(price))
     plt.xticks(rotation=45)
     plt.title(stock_name, fontproperties=myfont)
 
     plt.show()
-    print(data)
 
 main()
 

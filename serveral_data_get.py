@@ -13,7 +13,7 @@ def geturl(stock_code, start_date):
     result = requests.Session()
     
     params = {
-    'code' : '0056',
+    'code' : stock_code,
     'ctl00$ContentPlaceHolder1$startText' : start_date,
     'ctl00$ContentPlaceHolder1$submitBut:' : '查詢'
     }
@@ -47,6 +47,8 @@ def getdata(soup):
             t = trPos[i].select('td')[0].text
             price.append(p)
             dateContent.append(t)
+
+        price.reverse()
 
         return  price, dateContent, st_name
     except:
@@ -86,9 +88,22 @@ def main():
 
     # 中文字體路徑
     myfont = fp(fname=r'/System/Library/Fonts/STHeiti Medium.ttc')
-
-    plt.plot(sorted(date), sorted(price))
+    plt.plot(sorted(date), price)
     plt.xticks(rotation=45)
+
+    if len(date) <= 30:
+        plt.xticks(np.arange(0, len(date), 1.0))
+        plt.yticks(np.arange(min(price), max(price), 0.1))
+    elif len(date) <= 90:
+        plt.xticks(np.arange(0, len(date), 10.0))
+        plt.yticks(np.arange(min(price), max(price), 0.5))
+    elif len(date) <= 360:
+        plt.xticks(np.arange(0, len(date), 30.0))
+        plt.yticks(np.arange(min(price), max(price), 0.5))
+    else:
+        plt.xticks(np.arange(0, len(date), 1.0))
+        plt.yticks(np.arange(min(price), max(price), 0.1))
+
     plt.title(stock_name, fontproperties=myfont)
 
     plt.show()
